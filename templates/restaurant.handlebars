@@ -1,0 +1,44 @@
+<div class="card">
+    <a href="restaurant-details.html?id={{id}}"><img class="card-img-top" src="{{image}}"></a>
+    <div class="card-body">
+        <h5 class="card-title"><a href="restaurant-details.html?id={{id}}">{{name}}</a></h5>
+        <p class="card-text description">{{description}}</p>
+        <div class="card-text">
+            <small class="text-muted">
+                <strong>Opens: </strong>{{daysOpen}}
+            </small>
+            {{#if open}}
+            <span class="badge badge-success">Open</span>
+            {{else}}
+            <span class="badge badge-danger">Closed</span>
+            {{/if}}
+        </div>
+        <div class="card-text">
+            <small class="text-muted">
+                <strong>Phone: </strong>{{phone}}
+            </small>
+        </div>
+        <div class="card-text">
+            <small class="text-muted">
+                {{#each fullStars}}
+                <i class="fas fa-star"></i>
+                {{/each}}
+                {{#each emptyStars}}
+                    <i class="far fa-star"></i>
+                {{/each}}
+                ({{stars}})
+            </small>
+        </div>
+        {{#if mine}}
+        <button class="mt-2 btn btn-sm btn-danger btn-delete">Delete</button>
+        {{/if}}
+    </div>
+    <div class="card-footer">
+        <small class="text-muted float-right">
+            {{distance}} km
+        </small>
+        <small class="text-muted">
+            {{cuisine}}
+        </small>
+    </div>
+</div>

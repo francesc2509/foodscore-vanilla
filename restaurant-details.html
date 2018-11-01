@@ -1,0 +1,105 @@
+<html>
+
+<head>
+  <title>Restaurant details | FoodScore</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/node_modules/@fortawesome/fontawesome-free/css/all.min.css">
+  <style>
+    #map {
+      width: 100%;
+      height: 300px;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand navbar-dark bg-dark">
+    <a class="navbar-brand" href="index.html">FoodScore</a>
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="index.html">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="add-restaurant.html">New restaurant</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="profile.html">My profile</a>
+      </li>
+    </ul>
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="#" id="logout">Logout</a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <div id="cardContainer" class="mt-4">
+      <!-- RESTAURANT'S CARD -->
+    </div>
+
+    <div class="card mt-4">
+      <div class="card-header" id="address">Restaurant's address</div>
+      <div class="card-body">
+        <div id="map"></div>
+      </div>
+    </div>
+
+
+    <ul class="list-group mt-4 mb-4" id="comments">
+      <li class="list-group-item active">Restaurant comments</li>
+      <li class="list-group-item d-flex flex-row">
+        <div>
+          <img class="rounded-circle mr-3" style="width: 40px;" src="http://localhost:3000/img/profile.jpg" alt="">
+        </div>
+        <div>
+          <div><strong>User's name: </strong>Comment text....</div>
+          <div>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="far fa-star"></i>
+          </div>
+          <small>03/10/2018 15:26:24</small>
+        </div>
+      </li>
+      <li class="list-group-item d-flex flex-row">
+        <div class="float-left">
+          <img class="rounded-circle mr-3" style="width: 40px;" src="http://localhost:3000/img/profile.jpg" alt="">
+        </div>
+        <div>
+          <div><strong>User 2 name: </strong>Another comment<br>or nothing...</div>
+          <div>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="far fa-star"></i>
+            <i class="far fa-star"></i>
+          </div>
+          <small>07/10/2018 05:13:23</small>
+        </div>
+      </li>
+    </ul>
+
+    <form class="mt-4" id="commentForm">
+      <h4>Write about this restaurant:</h4>
+      <div class="form-group">
+        <textarea class="form-control" name="comment" id="comment" placeholder="Write an opinion"></textarea>
+      </div>
+      <div id="stars">
+        <i class="far fa-star" data-score="1"></i>
+        <i class="far fa-star" data-score="2"></i>
+        <i class="far fa-star" data-score="3"></i>
+        <i class="far fa-star" data-score="4"></i>
+        <i class="far fa-star" data-score="5"></i>
+      </div>
+      <button type="submit" class="btn btn-primary mt-3">Send</button>
+    </form>
+
+    <script src="dist/commons.bundle.js"></script>
+    <script src="dist/restaurant-details.bundle.js"></script>
+</body>
+
+</html>

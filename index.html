@@ -1,0 +1,79 @@
+<html>
+
+<head>
+  <title>Restaurants | FoodScore</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/node_modules/@fortawesome/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <nav class="navbar navbar-expand navbar-dark bg-dark">
+    <a class="navbar-brand" href="index.html">FoodScore</a>
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link active" href="index.html">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="add-restaurant.html">New restaurant</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="profile.html">My profile</a>
+      </li>
+    </ul>
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="#" id="logout">Logout</a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <nav class="navbar navbar-light bg-light justify-content-between mt-3">
+      <ul class="nav nav-pills">
+        <li class="nav-item">
+          <a class="nav-link" href="#" id="orderName">Order by name</a>
+        </li>
+        <li class="nav-item ml-1">
+          <a class="nav-link" href="#" id="showOpen">Show open</a>
+        </li>
+      </ul>
+      <form class="form-inline mb-0">
+        <input class="form-control mr-sm-2" type="text" id="search" placeholder="Search" aria-label="Search">
+      </form>
+    </nav>
+    <div id="placesContainer" class="card-columns mt-3">
+      <!-- <div class="card">
+        <img class="card-img-top" src="./rest1.jpg">
+        <div class="card-body">
+          <h5 class="card-title">Restaurant name</h5>
+          <p class="card-text description">This is the description.</p>
+          <div class="card-text">
+            <small class="text-muted">
+              <strong>Opens: </strong>Mo, Tu, Th, Fr, Sa, Su
+            </small>
+            <span class="badge badge-success">Open</span>
+            <span class="badge badge-danger">Closed</span>
+          </div>
+          <div class="card-text">
+            <small class="text-muted">
+              <strong>Phone: </strong>934823234
+            </small>
+          </div>
+          <button class="mt-2 btn btn-sm btn-danger btn-delete">Delete</button>
+        </div>
+        <div class="card-footer">
+          <small class="text-muted">
+            Italian food
+          </small>
+        </div>
+      </div> -->
+    </div>
+  </div>
+
+  <script src="dist/commons.bundle.js"></script>
+  <script src="dist/index.bundle.js"></script>
+</body>
+
+</html>

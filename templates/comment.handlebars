@@ -1,0 +1,15 @@
+<div class="float-left">
+    <a href="profile.html?id={{userId}}"><img class="rounded-circle mr-3" style="width: 40px;" src="{{userImage}}" alt=""></a>
+</div>
+<div>
+    <div><strong>{{userName}}: </strong>{{comment}}</div>
+    <div>
+        {{#each fullStars}}
+            <i class="fas fa-star"></i>
+        {{/each}}
+        {{#each emptyStars}}
+            <i class="far fa-star"></i>
+        {{/each}}
+        <small>{{date}}</small>
+    </div>
+</div>
