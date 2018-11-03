@@ -4,18 +4,25 @@ export class Http {
     static ajax(
         method: string = 'GET',
         url: string,
+        authorize: boolean = true,
         headers: HeadersInit = {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         },
         data: any|string = undefined,
-    ): Promise<IResponse> {
-        console.log(url);
 
+    ): Promise<IResponse> {
         if (data && typeof data !== 'string') {
             data = JSON.stringify(data);
         }
 
+        if (authorize) {
+            headers = { 
+                ...headers,
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            };
+        }
+        
         return fetch(url, {
             body: data,
             headers,

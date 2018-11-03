@@ -58,7 +58,12 @@ document.addEventListener('DOMContentLoaded', (loadedEvent) => {
                     avatar: previewImg.src,
                 };
                 
-                Auth.register(userInfo).then(() => {
+                Auth.register(userInfo).then(async () => {
+                    await swal(
+                        'Register successful',
+                        'The user has been registered',
+                        'success'
+                    );
                     location.assign('./login.html');
                 }).catch(err => {
                     const errors = <Array<any>>err.message;
