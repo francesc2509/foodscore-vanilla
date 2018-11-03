@@ -5,9 +5,9 @@ let restaurants = [];
 let orderName = false;
 let showOpen = false;
 let search = '';
-const showRestaurants = (data = []) => {
+const showRestaurants = (data: Restaurant[] = []) => {
     if (container) {
-        const dayOfWeek = new Date().getDay().toString();
+        const dayOfWeek = new Date().getDay();
         data = data.filter(item => {
             return (!search || (item.name || '' ).toLowerCase().includes(search))
                 && (!showOpen || item.daysOpen.includes(dayOfWeek));

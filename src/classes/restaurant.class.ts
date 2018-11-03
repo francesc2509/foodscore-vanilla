@@ -32,7 +32,7 @@ export class Restaurant implements IRestaurant {
         this.name = restJSON.name;
         this.description = restJSON.description;
         this.cuisine = restJSON.cuisine;
-        this.daysOpen = restJSON.daysOpen;
+        this.daysOpen = restJSON.daysOpen.map(day => Number(day));
         this.image = restJSON.image;
         this.phone = restJSON.phone;
         this.creator = restJSON.creator;
@@ -83,7 +83,12 @@ export class Restaurant implements IRestaurant {
             cuisine: this.cuisine.join(', '), // Cuisine is an array, pass it like a string
             phone: this.phone,
             image: `${SERVER}/${this.image}`, // Complete image url
-            open: this.daysOpen.includes(new Date().getDay()) // true or false
+            open: this.daysOpen.includes(new Date().getDay()), // true or false
+            stars: this.stars,
+            fullStars: new Array(!isNaN(this.stars) ? Number(this.stars): 0),
+            emptyStars: new Array(!isNaN(this.stars) ? 5-Number(this.stars): 0),
+            mine: this.mine,
+            distance: this.distance.toFixed(2)
         });
 
         return restHTML;
