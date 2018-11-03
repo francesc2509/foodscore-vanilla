@@ -79,15 +79,25 @@ export class Restaurant implements IRestaurant {
     }
 
     async delete(): Promise<void> {
-        return null;
+        await Http.ajax('DELETE', `${SERVER}/restaurants/${this.id}`, true);
     }
 
     async getComments(): Promise<IComment[]> {
-        return null;
+        return await Http.ajax(
+            'GET',
+            `${SERVER}/restaurants/${this.id}/comments`,
+            true
+        ).then(res => res.comments);
     }
     
     async addComment(comment: IComment): Promise<IComment> {
-        return null;
+        return await Http.ajax(
+            'POST',
+            `${SERVER}/restaurants/${this.id}/comments`,
+            true,
+            undefined,
+            comment
+        ).then(res => res.comment);
     }
 
     toHTML(): string {
@@ -101,8 +111,8 @@ export class Restaurant implements IRestaurant {
             image: `${SERVER}/${this.image}`, // Complete image url
             open: this.daysOpen.includes(new Date().getDay()), // true or false
             stars: this.stars,
-            fullStars: new Array(!isNaN(this.stars) ? Number(this.stars): 0).fill(1),
-            emptyStars: new Array(!isNaN(this.stars) ? 5 - Number(this.stars): 0).fill(1),
+            fullStars: new Array(!isNaN(this.stars) ? Number(Math.round(this.stars)): 0).fill(1),
+            emptyStars: new Array(!isNaN(this.stars) ? 5 - Number(Math.round(this.stars)): 0).fill(1),
             mine: this.mine,
             distance: this.distance.toFixed(2)
         });

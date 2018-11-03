@@ -1,19 +1,20 @@
 import { Restaurant } from "./classes/restaurant.class";
+import swal from "sweetalert2";
 
 let container: HTMLDivElement;
 let orderName = false;
 let showOpen = false;
 let search = '';
-const showRestaurants = (data: Restaurant[] = []) => {
+const showRestaurants = (restaurants: Restaurant[] = []) => {
     if (container) {
         const dayOfWeek = new Date().getDay();
-        data = data.filter(item => {
+        restaurants = restaurants.filter(item => {
             return (!search || (item.name || '' ).toLowerCase().includes(search))
                 && (!showOpen || item.daysOpen.includes(dayOfWeek));
         });
 
         if (orderName) {
-            data.sort((a, b) => {
+            restaurants.sort((a, b) => {
 
                 if (a > b) {
                     return 1;
@@ -32,12 +33,40 @@ const showRestaurants = (data: Restaurant[] = []) => {
             container.removeChild(child)
             child = next;
         }
-        let innerHTML = '';
-        data.forEach(restaurant => {
-            innerHTML += restaurant.toHTML();
-        });
-        container.innerHTML = innerHTML;
+
+        container.innerHTML = restaurants.map(
+            restaurant => restaurant.toHTML()
+        ).join('');
+
+        setDeleteListener(restaurants);
     }
+};
+
+const setDeleteListener = (restaurants: Restaurant[]) => {
+    Array.from(container.children).forEach((child, i) => {
+        const deleteBtn = child.querySelector('.btn-delete');
+        console.log(deleteBtn);
+        if(deleteBtn) {
+            deleteBtn.addEventListener('click', (event) => {
+                const restaurant = restaurants[i];
+                restaurant.delete().then(() => {
+                    restaurants = restaurants.filter(item => item.id !== restaurant.id);
+                    swal(
+                        'Deletion successful',
+                        `${restaurant.id}-${restaurant.name} was deleted`,
+                        'success'
+                    ).then()
+                    showRestaurants(restaurants);
+                }).catch(async(err) => {
+                    swal(
+                        'Deletion error',
+                        err.message,
+                        'error'
+                    );
+                });
+            });
+        }
+    });
 };
 
 

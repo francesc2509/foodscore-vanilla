@@ -1,6 +1,11 @@
 import { Restaurant } from './classes/restaurant.class';
 import { load, urlSettings } from 'google-maps-promise';
 import swal from 'sweetalert2';
+import { IComment } from './interfaces/icomment';
+import { SERVER } from './constants';
+
+declare function require(module: string): any;
+const commTemplate = require('../templates/comment.handlebars');
 
 urlSettings.key = 'AIzaSyBOsD1guCZbuq-owCb6iCzjqLJSi6rLNiM';
 urlSettings.language = 'es';
@@ -8,7 +13,10 @@ urlSettings.region = 'ES';
 urlSettings.libraries = ['geometry', 'places'];
 
 const queryString: string = location.search;
-let params: Map<string, string> = new Map();
+const params: Map<string, string> = new Map();
+let comments: IComment[] = [];
+let rating: number;
+
 
 if (queryString) {
     let key: string = ''; 
@@ -22,24 +30,63 @@ if (queryString) {
     });
 
     
-    document.addEventListener('DOMContentLoaded', (event) => {        
+    document.addEventListener('DOMContentLoaded', async(loadEvent) => {        
         const cardContainerDiv = <HTMLDivElement> document.querySelector('#cardContainer');
-        const addressDiv = <HTMLDivElement>document.querySelector('#address');
-        const mapDiv = <HTMLDivElement>document.querySelector('#map');
+        const addressDiv = <HTMLDivElement> document.querySelector('#address');
+        const mapDiv = <HTMLDivElement> document.querySelector('#map');
+        const commentsUl = <HTMLUListElement> document.querySelector('#comments');
+        const commentForm = <HTMLFormElement> document.querySelector('#commentForm'); 
 
         if (!params.has('id')) {
-            swal(
+            await swal(
                 'Invalid Request',
                 `None Id was provided`,
                 'error'
-            ).then(() => location.assign('./index.html'));
+            );
+            location.assign('./index.html');
         }       
 
         Restaurant.get(Number(params.get('id'))).then(
-            res => {
-                cardContainerDiv.innerHTML = res.toHTML();
-                addressDiv.textContent = res.address;
-                setUpMap(res, mapDiv);
+            restaurant => {
+                if (restaurant.commented) {
+                    commentForm.classList.add('d-none');
+                } else {
+                    const commentTextArea = <HTMLTextAreaElement> commentForm.comment;
+                    const starsDiv = <HTMLDivElement> commentForm.querySelector('#stars');
+                    const starIcons = <HTMLElement[]> Array.from(starsDiv.querySelectorAll('i'));
+
+                    starIcons.forEach((icon, position) => {
+                        icon.addEventListener('click', (clickEvent) => {
+                            rateRestaurant(starIcons, position);
+                        })
+                    });
+
+                    commentForm.addEventListener('submit', (submitEvent) => {
+                        const newComment = {
+                            stars: rating,
+                            text: commentTextArea.value
+                        };
+                        restaurant.addComment(newComment).then(
+                            comment => {
+                                commentTextArea.value = '';
+                                rateRestaurant(starIcons, -1);
+
+                                comments.push(comment);
+                                showComments(commentsUl);
+                            }
+                        ).catch();
+                        submitEvent.preventDefault()
+                    });
+                }
+                
+                cardContainerDiv.innerHTML = restaurant.toHTML();
+                addressDiv.textContent = restaurant.address;
+                setUpMap(restaurant, mapDiv);
+
+                restaurant.getComments().then(commentsRes => {
+                    comments = commentsRes;
+                    showComments(commentsUl);
+                }).catch();
             }
         ).catch(err => {
             swal(
@@ -76,3 +123,43 @@ const setUpMap = (restaurant: Restaurant, mapDiv: HTMLDivElement) => {
         infoWindow.open(map, marker);
     });
 };
+
+const rateRestaurant = (stars: HTMLElement[], position) => {
+    let classList: DOMTokenList;
+
+    // It will be used to check if the user wants to give 0 stars
+    const tmpRating = rating - 1;
+
+    stars.forEach((star, index) => {
+        classList = star.classList;
+        classList.remove('fas');
+        classList.remove('far');
+
+        if (index > position || tmpRating === position) {
+            classList.add('far');
+        } else {
+            classList.add('fas');
+        }
+    });
+
+    rating = tmpRating !== position ? position + 1: 0;
+};
+
+const showComments = (container: HTMLElement) => {
+    let innerHTML = '';
+
+    comments.forEach(comment => {
+        innerHTML += commTemplate({
+            userId: comment.user.id,
+            userName: comment.user.name,
+            userImage: `${SERVER}/${comment.user.avatar}`,
+            comment: comment.text,
+            date: comment.date,
+            fullStars: new Array(!isNaN(comment.stars) ? Number(Math.round(comment.stars)): 0).fill(1),
+            emptyStars: new Array(!isNaN(comment.stars) ? 5 - Number(Math.round(comment.stars)): 0).fill(1),
+        });
+    });
+
+    const firstChild = <HTMLLIElement>container.firstElementChild;
+    container.innerHTML = firstChild.outerHTML + innerHTML;
+}
