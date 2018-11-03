@@ -1,7 +1,6 @@
 import { Restaurant } from "./classes/restaurant.class";
 
 let container: HTMLDivElement;
-let restaurants = [];
 let orderName = false;
 let showOpen = false;
 let search = '';
@@ -15,12 +14,10 @@ const showRestaurants = (data: Restaurant[] = []) => {
 
         if (orderName) {
             data.sort((a, b) => {
-                let nameA = (a.name || '').toLowerCase();
-                let nameB = (b.name || '').toLowerCase();
 
-                if (nameA > nameB) {
+                if (a > b) {
                     return 1;
-                } else if (a.name === b.name) {
+                } else if (a === b) {
                     return 0;
                 }
                 return -1;

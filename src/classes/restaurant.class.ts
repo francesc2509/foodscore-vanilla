@@ -45,6 +45,10 @@ export class Restaurant implements IRestaurant {
         this.lng = restJSON.lng;
     }
 
+    valueOf(): string {
+        return this.name ? this.name.toLowerCase(): '';
+    }
+
     static async getAll(): Promise<Restaurant[]> {
         const data = await Http.ajax(
             'GET',
@@ -56,7 +60,18 @@ export class Restaurant implements IRestaurant {
     }
 
     static async get(id: number): Promise<Restaurant> {
-        return null;
+
+        if (isNaN(id)) {
+            throw new Error('Provided Id is not valid');
+        }
+
+        const data = await Http.ajax(
+            'GET',
+            `${SERVER}/restaurants/${id}`,
+            true
+        );
+
+        return new Restaurant(data.restaurant);
     }
     
     async post(): Promise<Restaurant> {
@@ -77,6 +92,7 @@ export class Restaurant implements IRestaurant {
 
     toHTML(): string {
         const restHTML = restTemplate({
+            id: this.id,
             name: this.name,
             description: this.description,
             daysOpen: this.daysOpen.map(day => WEEKDAYS[day]).join(', '), // Pass days to string like "Mo, Tu, Wed, Th"
@@ -85,13 +101,12 @@ export class Restaurant implements IRestaurant {
             image: `${SERVER}/${this.image}`, // Complete image url
             open: this.daysOpen.includes(new Date().getDay()), // true or false
             stars: this.stars,
-            fullStars: new Array(!isNaN(this.stars) ? Number(this.stars): 0),
-            emptyStars: new Array(!isNaN(this.stars) ? 5-Number(this.stars): 0),
+            fullStars: new Array(!isNaN(this.stars) ? Number(this.stars): 0).fill(1),
+            emptyStars: new Array(!isNaN(this.stars) ? 5 - Number(this.stars): 0).fill(1),
             mine: this.mine,
             distance: this.distance.toFixed(2)
         });
-
+        
         return restHTML;
-        //return null;
     }
 }
