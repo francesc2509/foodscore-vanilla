@@ -15,6 +15,7 @@ export class Auth {
     static async register(userInfo: IUser): Promise<void> {
         await Http.ajax('POST', `${SERVER}/auth/register`, false, undefined, userInfo)
     }
+    
     static async checkToken(): Promise<void> {
         await Http.ajax(
             'GET',
@@ -22,7 +23,9 @@ export class Auth {
             true,
         );
     }
+    
     static logout() {
-
+        localStorage.removeItem('token');
+        location.assign('../login.html');
     }
 }

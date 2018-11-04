@@ -1,5 +1,6 @@
 import { Restaurant } from "./classes/restaurant.class";
 import swal from "sweetalert2";
+import { Auth } from './classes/auth.class';
 
 let container: HTMLDivElement;
 let orderName = false;
@@ -45,7 +46,7 @@ const showRestaurants = (restaurants: Restaurant[] = []) => {
 const setDeleteListener = (restaurants: Restaurant[]) => {
     Array.from(container.children).forEach((child, i) => {
         const deleteBtn = child.querySelector('.btn-delete');
-        console.log(deleteBtn);
+        
         if(deleteBtn) {
             deleteBtn.addEventListener('click', (event) => {
                 const restaurant = restaurants[i];
@@ -75,6 +76,12 @@ if (!localStorage.getItem('token')) {
 }
 
 document.addEventListener('DOMContentLoaded', (loadedEvent) => {
+    const logoutBtn = document.querySelector('#logout');
+    logoutBtn.addEventListener('click', clickEvent => {
+        Auth.logout();
+        clickEvent.preventDefault();
+    });
+
     container = document.querySelector('#placesContainer');
     let restaurants: Restaurant[];
 
