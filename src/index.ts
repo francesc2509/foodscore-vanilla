@@ -6,70 +6,6 @@ let container: HTMLDivElement;
 let orderName = false;
 let showOpen = false;
 let search = '';
-const showRestaurants = (restaurants: Restaurant[] = []) => {
-    if (container) {
-        const dayOfWeek = new Date().getDay();
-        restaurants = restaurants.filter(item => {
-            return (!search || (item.name || '' ).toLowerCase().includes(search))
-                && (!showOpen || item.daysOpen.includes(dayOfWeek));
-        });
-
-        if (orderName) {
-            restaurants.sort((a, b) => {
-
-                if (a > b) {
-                    return 1;
-                } else if (a === b) {
-                    return 0;
-                }
-                return -1;
-            });
-        }
-
-        let child = container.firstElementChild;
-        let next = null;
-
-        for (; child;) {
-            next = child.nextElementSibling;
-            container.removeChild(child)
-            child = next;
-        }
-
-        container.innerHTML = restaurants.map(
-            restaurant => restaurant.toHTML()
-        ).join('');
-
-        setDeleteListener(restaurants);
-    }
-};
-
-const setDeleteListener = (restaurants: Restaurant[]) => {
-    Array.from(container.children).forEach((child, i) => {
-        const deleteBtn = child.querySelector('.btn-delete');
-        
-        if(deleteBtn) {
-            deleteBtn.addEventListener('click', (event) => {
-                const restaurant = restaurants[i];
-                restaurant.delete().then(() => {
-                    restaurants = restaurants.filter(item => item.id !== restaurant.id);
-                    swal(
-                        'Deletion successful',
-                        `${restaurant.id}-${restaurant.name} was deleted`,
-                        'success'
-                    ).then()
-                    showRestaurants(restaurants);
-                }).catch(async(err) => {
-                    swal(
-                        'Deletion error',
-                        err.message,
-                        'error'
-                    );
-                });
-            });
-        }
-    });
-};
-
 
 if (!localStorage.getItem('token')) {
     location.assign('./login.html');
@@ -115,3 +51,83 @@ document.addEventListener('DOMContentLoaded', (loadedEvent) => {
     ).catch(err => console.error(err));
 });
 
+const showRestaurants = (restaurants: Restaurant[] = []) => {
+    if (container) {
+        const dayOfWeek = new Date().getDay();
+        restaurants = restaurants.filter(item => {
+            return (!search || (item.name || '' ).toLowerCase().includes(search))
+                && (!showOpen || item.daysOpen.includes(dayOfWeek));
+        });
+
+        if (orderName) {
+            restaurants.sort((a, b) => {
+
+                if (a > b) {
+                    return 1;
+                } else if (a === b) {
+                    return 0;
+                }
+                return -1;
+            });
+        }
+
+        let child = container.firstElementChild;
+        let next = null;
+
+        for (; child;) {
+            next = child.nextElementSibling;
+            container.removeChild(child)
+            child = next;
+        }
+
+        container.innerHTML = restaurants.map(
+            restaurant => restaurant.toHTML()
+        ).join('');
+
+        setDeleteListener(restaurants);
+    }
+};
+
+const setDeleteListener = (restaurants: Restaurant[]) => {
+    Array.from(container.children).forEach((child, i) => {
+        const deleteBtn = child.querySelector('.btn-delete');
+        
+        if(deleteBtn) {
+            deleteBtn.addEventListener('click', (event) => {
+                swal({
+                    title: 'Delete restaurant',
+                    text: `Restaurant ${restaurants[i].id}-${restaurants[i].name}` 
+                        + ` will be removed permanently. Are you sure?`,
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.value) {
+                        deleteRestaurant(restaurants, i);
+                    }
+                }) 
+            });
+        }
+    });
+};
+
+const deleteRestaurant = (restaurants, i) => {
+    const restaurant = restaurants[i];
+    restaurant.delete().then(() => {
+        restaurants = restaurants.filter(item => item.id !== restaurant.id);
+        swal(
+            'Deletion successful',
+            `${restaurant.id}-${restaurant.name} was deleted`,
+            'success'
+        ).then()
+        showRestaurants(restaurants);
+    }).catch(async(err) => {
+        swal(
+            'Deletion error',
+            err.message,
+            'error'
+        );
+    });
+}

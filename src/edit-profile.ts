@@ -1,4 +1,5 @@
 import swal from 'sweetalert2';
+import Cropper from 'cropperjs';
 
 import { Auth } from './classes/auth.class';
 import { User } from './classes/user.class';
@@ -148,7 +149,26 @@ const setReferences = () => {
         
         reader.addEventListener('load', e => {
             previewImg.classList.remove('d-none');
+
             previewImg.src = reader.result.toString();
+            const cropper = new Cropper(previewImg, {
+                autoCrop: true,
+                autoCropArea: 1,
+                aspectRatio: 1,
+                minCropBoxWidth: 200,
+                minCropBoxHeight: 200,
+                viewMode: 2,
+                crop: function(event: any) {
+                    const options = {
+                        fillColor: 'white',
+                        width: 200,
+                        maxWidth: 200
+                    };
+                    previewImg.src = cropper.getCroppedCanvas(options).toDataURL('image/jpeg');
+                    cropper.destroy();
+                }
+            });
+
         });
     });
     avatarForm.addEventListener('submit', (submitEvent) => {

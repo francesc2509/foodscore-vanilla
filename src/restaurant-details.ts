@@ -1,4 +1,5 @@
 import swal from 'sweetalert2';
+import * as moment from 'moment';
 
 import { IComment } from './interfaces/icomment';
 import { Restaurant } from './classes/restaurant.class';
@@ -7,8 +8,7 @@ import { SERVER, URLParams } from './constants';
 import { GMap } from './classes/gmaps.class';
 
 
-declare function require(module: string): any;
-const commTemplate = require('../templates/comment.handlebars');
+import { commentTemplate } from '../templates';
 
 const queryString: string = location.search;
 let cardContainerDiv: HTMLDivElement;
@@ -60,32 +60,7 @@ const getRestaurantsHandler = async (restaurant: Restaurant) => {
     if (restaurant.commented) {
         commentForm.classList.add('d-none');
     } else {
-        const commentTextArea = <HTMLTextAreaElement> commentForm.comment;
-        const starsDiv = <HTMLDivElement> commentForm.querySelector('#stars');
-        const starIcons = <HTMLElement[]> Array.from(starsDiv.querySelectorAll('i'));
-
-        starIcons.forEach((icon, position) => {
-            icon.addEventListener('click', (clickEvent) => {
-                rateRestaurant(starIcons, position);
-            })
-        });
-
-        commentForm.addEventListener('submit', (submitEvent) => {
-            const newComment = {
-                stars: rating,
-                text: commentTextArea.value
-            };
-            restaurant.addComment(newComment).then(
-                comment => {
-                    commentTextArea.value = '';
-                    rateRestaurant(starIcons, -1);
-
-                    comments.push(comment);
-                    showComments(commentsUl);
-                }
-            ).catch();
-            submitEvent.preventDefault()
-        });
+        setUpCommentsForm(restaurant);
     }
     
     cardContainerDiv.innerHTML = restaurant.toHTML();
@@ -108,7 +83,7 @@ const getRestaurantsHandler = async (restaurant: Restaurant) => {
 const rateRestaurant = (stars: HTMLElement[], position) => {
     let classList: DOMTokenList;
 
-    // It will be used to check if the user wants to give 0 stars
+    // It will be used to check if the user wants to remove the stars
     const tmpRating = rating - 1;
 
     stars.forEach((star, index) => {
@@ -129,13 +104,23 @@ const rateRestaurant = (stars: HTMLElement[], position) => {
 const showComments = (container: HTMLElement) => {
     let innerHTML = '';
 
+    let date: Date;
     comments.forEach(comment => {
-        innerHTML += commTemplate({
+        date = new Date(comment.date);
+        
+        // const month: number = date.getMonth() + 1;
+        // const day: number = date.getDate();
+        // const year: number = date.getFullYear();
+        // const hours: number = date.getHours();
+        // const minutes: number = date.getMinutes();
+        // const seconds: number = date.getSeconds();
+
+        innerHTML += commentTemplate({
             userId: comment.user.id,
             userName: comment.user.name,
             userImage: `${SERVER}/${comment.user.avatar}`,
             comment: comment.text,
-            date: comment.date,
+            date: moment(date).format('MM/DD/YYYY hh:mm:ss'),
             fullStars: new Array(!isNaN(comment.stars) ? Number(Math.round(comment.stars)): 0).fill(1),
             emptyStars: new Array(!isNaN(comment.stars) ? 5 - Number(Math.round(comment.stars)): 0).fill(1),
         });
@@ -143,4 +128,39 @@ const showComments = (container: HTMLElement) => {
 
     const firstChild = <HTMLLIElement>container.firstElementChild;
     container.innerHTML = firstChild.outerHTML + innerHTML;
+}
+
+const setUpCommentsForm = (restaurant: Restaurant) => {
+    const commentTextArea = <HTMLTextAreaElement> commentForm.comment;
+    const starsDiv = <HTMLDivElement> commentForm.querySelector('#stars');
+    const starIcons = <HTMLElement[]> Array.from(starsDiv.querySelectorAll('i'));
+
+    starIcons.forEach((icon, position) => {
+        icon.addEventListener('click', (clickEvent) => {
+            rateRestaurant(starIcons, position);
+        })
+    });
+
+    commentForm.addEventListener('submit', (submitEvent) => {
+        submitEvent.preventDefault()
+        
+        const newComment = {
+            stars: rating,
+            text: commentTextArea.value
+        };
+
+        restaurant.addComment(newComment).then(
+            comment => {
+                commentTextArea.value = '';
+                rateRestaurant(starIcons, -1);
+
+                comments.push(comment);
+                showComments(commentsUl);
+
+                if (!commentForm.classList.contains('d-none')) {
+                    commentForm.classList.add('d-none');
+                }
+            }
+        ).catch();
+    });
 }

@@ -3,15 +3,14 @@ import { URLParams, SERVER } from './constants';
 import { User } from './classes/user.class';
 import { GMap } from './classes/gmaps.class';
 
-declare function require(module: string): any;
-const profileTemplate = require('../templates/profile.handlebars');
+import { profileTemplate }  from '../templates';
 
 let profileDiv: HTMLDivElement;
 let mapDiv: HTMLDivElement;
 
-document.addEventListener('DOMContentLoaded', loadEvent => {
+document.addEventListener('DOMContentLoaded', (loadEvent) => {
     const queryString = <string>location.search;
-    const params = URLParams(queryString);
+    const params = <Map<string, string>>URLParams(queryString);
 
     profileDiv = document.querySelector('#profile');
     const logoutBtn = document.querySelector('#logout');

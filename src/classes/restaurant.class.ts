@@ -6,8 +6,8 @@ import { Http } from './http.class';
 
 import { SERVER, WEEKDAYS } from '../constants';
 
-declare function require(module: string): any;
-const restTemplate = require('../../templates/restaurant.handlebars');
+
+import { restaurantTemplate } from '../../templates';
 
 
 export class Restaurant implements IRestaurant {
@@ -75,7 +75,23 @@ export class Restaurant implements IRestaurant {
     }
     
     async post(): Promise<Restaurant> {
-        return null;
+        return await Http.ajax(
+            'POST',
+            `${SERVER}/restaurants`,
+            true,
+            undefined,
+            {
+                name: this.name,
+                description: this.description,
+                daysOpen: this.daysOpen.map(day => `${day}`),
+                cuisine: this.cuisine,
+                phone: this.phone,
+                address: this.address,
+                lat: this.lat,
+                lng: this.lng,
+                image: this.image
+            }
+        ).then(res => new Restaurant(res.restaurant));
     }
 
     async delete(): Promise<void> {
@@ -101,7 +117,7 @@ export class Restaurant implements IRestaurant {
     }
 
     toHTML(): string {
-        const restHTML = restTemplate({
+        const restHTML = restaurantTemplate({
             id: this.id,
             name: this.name,
             description: this.description,

@@ -3,7 +3,7 @@ import { IUser } from './interfaces/iuser';
 
 import { Geolocation } from './classes/geolocation.class';
 
-//Auth.checkToken().then(() => location.assign('./index.html')).catch(err => {});
+Auth.checkToken().then(() => location.assign('./index.html')).catch(err => {});
 
 document.addEventListener('DOMContentLoaded', (loadedEvent) => {
     const loginForm: HTMLFormElement = document.querySelector('#form-login');
@@ -33,7 +33,6 @@ document.addEventListener('DOMContentLoaded', (loadedEvent) => {
                 ).catch(err => {
                     errorP.textContent = `${err.error}`;
                 });
-                submitEvent.preventDefault();
             }
         );
 

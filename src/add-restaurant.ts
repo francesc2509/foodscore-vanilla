@@ -1,3 +1,5 @@
+import Cropper from 'cropperjs';
+
 import { Auth } from './classes/auth.class';
 import { Restaurant } from './classes/restaurant.class';
 import { IRestaurant } from './interfaces/irestaurant';
@@ -91,6 +93,23 @@ document.addEventListener("DOMContentLoaded", e => {
         
         reader.addEventListener('load', e => {
             imgPreview.src = reader.result.toString();
+            const cropper = new Cropper(imgPreview, {
+                autoCrop: true,
+                autoCropArea: 1,
+                aspectRatio: 16/9,
+                minCropBoxWidth: 1024,
+                viewMode: 2,
+                crop: function(event: any) {
+                    const options = {
+                        fillColor: 'white',
+                        width: 1024,
+                        maxWidth: 1024,
+                    };
+                    imgPreview.src = cropper.getCroppedCanvas(options).toDataURL('image/jpeg');
+                    cropper.destroy();
+                }
+            });
+            
         });
     });
 
@@ -145,6 +164,24 @@ const onSubmitHandler = (event) => {
             element.classList.remove('is-invalid')
         });
 
+        /**
+         * Since Google Places doesn't work, this code generates
+         * random coordinates to avoid adding all the new restaurants
+         * at the same location
+         */
+        let lat = Math.random() * (91);
+        if (lat > 90) {
+            lat = 90;
+        }
+        lat = Math.random() > 0.5 ? lat: -lat;
+
+        let lng = Math.random() * (181);
+        if (lng > 180) {
+            lng = 180;
+        }
+        lng = Math.random() > 0.5 ? lng: -lng;
+        
+
         const userInfo: IRestaurant = {
             name: nameInput.value,
             description: descriptionTextArea.value,
@@ -152,14 +189,14 @@ const onSubmitHandler = (event) => {
             daysOpen: Array.from(checkboxList).filter(c => c.checked).map((c) => Number(c.value)),
             phone: phoneInput.value,
             image: imgPreview.src,
-            address: '',
-            lat: 0,
-            lng: 0
+            address: 'Fake St. 123',
+            lat: lat,
+            lng: lng
         };
         const restaurant = new Restaurant(userInfo);
         restaurant.post().then(res => {
             location.assign('./index.html');
-        }).catch(err => alert(err));
+        }).catch(err => console.log(err));
     }
 };
 
