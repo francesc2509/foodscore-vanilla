@@ -1,65 +1,41 @@
-import { load, urlSettings } from 'google-maps-promise';
+import * as mapboxgl from 'mapbox-gl';
+import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 
-export class GMap {
+export class Gmap {
+    private map: mapboxgl.Map = null;
+    private autocomplete: MapboxGeocoder = null;
+    readonly accessToken = 'pk.eyJ1IjoiZnJhbmNlc2MyNTA5IiwiYSI6ImNqcHFwOHcwNDAweTk0MnM5OTVrMmRlOTEifQ.9VBKEICMr7O1KTBOcPlbng';
 
-    private map: google.maps.Map = null;
-
-    constructor(
-        private divMap: HTMLDivElement,
-        private coords: { latitude: number, longitude: number}
-    ) { 
-        urlSettings.key = 'AIzaSyBOsD1guCZbuq-owCb6iCzjqLJSi6rLNiM';
-        urlSettings.language = 'es';
-        urlSettings.region = 'ES';
-        urlSettings.libraries = ['geometry', 'places'];
+    constructor(private coords: {latitude: number, longitude: number}, private divMap: HTMLDivElement) {
+        console.log(coords);
     }
 
-    async loadMap(): Promise<void> {
-        await load();
-        this.map = new google.maps.Map(this.divMap, {
-            center: new google.maps.LatLng(this.coords.latitude, this.coords.longitude),
-            zoom: 18,
-            mapTypeId: google.maps.MapTypeId.ROADMAP
+    async loadMap(): Promise<mapboxgl.Map> {
+        if (this.map !== null) return this.map;
+
+        (<any>mapboxgl).accessToken = this.accessToken;
+
+        this.map = new mapboxgl.Map({
+            container: this.divMap,
+            style: 'mapbox://styles/mapbox/streets-v10',
+            center: [this.coords.longitude, this.coords.latitude],
+            zoom: 14
         });
-    }
-
-    getMap(): google.maps.Map {
         return this.map;
+    } 
+
+    createMarker(lat: number, lng: number, color: string): mapboxgl.Marker {
+        if(this.map === null) return null;
+        return new mapboxgl.Marker().setLngLat([this.coords.longitude, this.coords.latitude]).addTo(this.map);
     }
 
-    createMarker(coords: { latitude: number, longitude: number}, color = 'red'): google.maps.Marker {
-        var opts: google.maps.MarkerOptions = {
-            position: new google.maps.LatLng(coords.latitude, coords.longitude),
-            map: this.map,
-            icon: 'http://maps.google.com/mapfiles/ms/icons/' + color + '-dot.png'
-        };
-        return new google.maps.Marker(opts);
-    }
+    getAutocomplete(): MapboxGeocoder {
+        if(this.map === null) return null;
+        if(this.autocomplete !== null) return this.autocomplete;
 
-    createAutocomplete(input: HTMLInputElement) {
-        const autocomplete = new google.maps.places.Autocomplete(input);
-        const infowindow = new google.maps.InfoWindow();
-        google.maps.event.addListener(autocomplete, 'place_changed', e => {
-            infowindow.close();
-            let place = autocomplete.getPlace();
-            if (!place.geometry) return;
+        const autocomplete = new MapboxGeocoder({accessToken: this.accessToken});
+        this.map.addControl(autocomplete);
 
-            this.map.panTo(place.geometry.location);
-            let coords = <Coordinates>{
-                latitude: place.geometry.location.lat(),
-                longitude: place.geometry.location.lng()
-            };
-            const marker = this.createMarker(coords, 'red');
-
-            infowindow.setContent('<div><strong>'
-                + place.name 
-                + '</strong><br>'
-                + 'Latlng: ' 
-                + place.geometry.location.lat()
-                + ", " + place.geometry.location.lng()
-                + '<br>'
-                + place.formatted_address + '</div>');
-            infowindow.open(this.map, marker);
-        });
+        return autocomplete;
     }
 }

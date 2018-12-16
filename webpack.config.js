@@ -3,6 +3,7 @@ const path = require('path');
 module.exports = {
     context: path.join(__dirname, './src'),
     devtool: 'source-map',
+    performance: { hints: false },
     entry: {
         index: './index',
         'add-restaurant': './add-restaurant',

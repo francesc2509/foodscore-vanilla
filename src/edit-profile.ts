@@ -24,6 +24,10 @@ let password2Input: HTMLInputElement;
 let okInfo3P: HTMLParagraphElement;
 let errorInfo3P: HTMLParagraphElement;
 
+Auth.checkToken().catch(err => {
+    location.assign('./login.html');
+});
+
 document.addEventListener('DOMContentLoaded', loadEvent => {
     setReferences();
 

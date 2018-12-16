@@ -5,7 +5,7 @@ import { IComment } from './interfaces/icomment';
 import { Restaurant } from './classes/restaurant.class';
 import { Auth } from './classes/auth.class';
 import { SERVER, URLParams } from './constants';
-import { GMap } from './classes/gmaps.class';
+import { Gmap } from './classes/gmaps.class';
 
 
 import { commentTemplate } from '../templates';
@@ -19,6 +19,9 @@ let commentForm: HTMLFormElement;
 let comments: IComment[] = [];
 let rating: number;
 
+Auth.checkToken().catch(err => {
+    location.assign('./login.html');
+});
 
 if (queryString) {
     
@@ -70,10 +73,10 @@ const getRestaurantsHandler = async (restaurant: Restaurant) => {
         latitude: restaurant.lat,
         longitude: restaurant.lng
     };
-    const gmap = new GMap(mapDiv, coords);
+    const gmap = new Gmap(coords, mapDiv);
     await gmap.loadMap();
-    gmap.createMarker(coords, 'blue');
-
+    gmap.createMarker(coords.latitude, coords.longitude, 'blue');
+    
     restaurant.getComments().then(commentsRes => {
         comments = commentsRes;
         showComments(commentsUl);

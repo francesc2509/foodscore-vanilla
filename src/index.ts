@@ -7,9 +7,9 @@ let orderName = false;
 let showOpen = false;
 let search = '';
 
-if (!localStorage.getItem('token')) {
+Auth.checkToken().catch(err => {
     location.assign('./login.html');
-}
+});
 
 document.addEventListener('DOMContentLoaded', (loadedEvent) => {
     const logoutBtn = document.querySelector('#logout');

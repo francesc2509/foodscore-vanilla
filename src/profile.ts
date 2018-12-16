@@ -1,12 +1,16 @@
 import { Auth } from './classes/auth.class';
 import { URLParams, SERVER } from './constants';
 import { User } from './classes/user.class';
-import { GMap } from './classes/gmaps.class';
+import { Gmap } from './classes/gmaps.class';
 
 import { profileTemplate }  from '../templates';
 
 let profileDiv: HTMLDivElement;
 let mapDiv: HTMLDivElement;
+
+Auth.checkToken().catch(err => {
+    location.assign('./login.html');
+});
 
 document.addEventListener('DOMContentLoaded', (loadEvent) => {
     const queryString = <string>location.search;
@@ -33,9 +37,9 @@ document.addEventListener('DOMContentLoaded', (loadEvent) => {
                 latitude: user.lat,
                 longitude: user.lng
             };
-            const gmap = new GMap(mapDiv, coords);
+            const gmap = new Gmap(coords, mapDiv);
             await gmap.loadMap();
-            gmap.createMarker(coords, 'blue');
+            gmap.createMarker(coords.latitude, coords.longitude, 'blue');
         }
     );
 });

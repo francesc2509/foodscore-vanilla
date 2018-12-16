@@ -5,6 +5,8 @@
   <meta charset="UTF-8">
   <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="/node_modules/cropperjs/src/css/cropper.css">
+  <link rel="stylesheet" href="/node_modules/mapbox-gl/dist/mapbox-gl.css">
+  <link rel="stylesheet" href="/node_modules/@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css">
   <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -91,12 +93,12 @@
       <img src="" alt="" id="imgPreview" class="img-thumbnail">
       <div class="form-group">
         <label for="address">Address</label>
-        <input type="search" class="form-control" id="address" name="address">
+        <input type="hidden" class="form-control" id="address" name="address">
         <div class="invalid-feedback">Address is required.</div>
       </div>
       <div id="map"></div>
-      <input type="hidden" name="lat" id="lat">
-      <input type="hidden" name="lng" id="lng">
+      <input type="text" name="lat" id="lat">
+      <input type="text" name="lng" id="lng">
 
       <button type="submit" class="btn btn-primary">Create</button>
     </form>
